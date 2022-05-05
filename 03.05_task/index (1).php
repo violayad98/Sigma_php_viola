@@ -47,7 +47,7 @@ class Dog extends Animal
 
     public function eat()
     {
-        return "Така тварина їсть $food ";
+        return "Така тварина їсть $this->food ";
     }
 }
 
@@ -69,7 +69,7 @@ class Cat extends Animal
 
     public function eat()
     {
-        return "Така тварина їсть $food ";
+        return "Така тварина їсть $this->food ";
     }
 }
 
@@ -91,7 +91,7 @@ class Horse extends Animal
 
     public function eat()
     {
-        return "Така тварина їсть $food ";
+        return "Така тварина їсть $this->food ";
     }
 }
 
