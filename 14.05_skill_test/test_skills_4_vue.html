@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"> </script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/pl.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+<link rel="stylesheet"
+	href="https://dl.dropboxusercontent.com/s/ggg4zmxzjgz4i9b/style.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+</head>
+<body>
+	<div id="app">
+		
+		<div id="table">
+			<table class="table table-striped">
+				<thead >
+					<tr>
+						<th scope="col">N</th>
+						<th scope="col">Прізвище</th>
+						<th scope="col">Телефон</th>
+						<th scope="col">Відділ</th>
+						
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(el,index) in arr">
+						<th scope="row">{{ index+1 }}</th>
+						<td>{{ el.name }}</td>
+						<td>{{ el.tel }}</td>
+						<td>{{ el.company }}</td>
+						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-xs-4" id="name_div">
+			<label for="mail">Прізвище:</label> <input v-model="current.name"
+				placeholder="" type="text" class="form-control"
+				id="name">
+<!-- 				<span class="form-text text-danger" v-if="message.name" >{{message.name}}</span>
+ -->		</div>
+		
+		<div class="col-xs-4" id="tel_div">
+			<label for="tel">Телефон:</label> <input v-model="current.tel" 
+				placeholder="" type='text' class="form-control" 
+				id="tel">
+		</div>
+		<div class="col-xs-4" id="company_div">
+			<label for="company">Відділ:</label> <input
+				v-model="current.company" placeholder="" type='text'
+				class="form-control" id="company">
+		</div>
+		 <p v-if="errors.length">
+    <b>Будь-ласка виправіть помилки вводу даних:</b>
+    <ul>
+      <li v-for="error in errors">{{ error }}</li>
+    </ul>
+  </p>
+		<div id="button">
+			<div id="button_container_1">
+				<button type="button" class="btn btn-primary" @click="addCurrent">Add
+					a row</button>
+			</div>
+			
+		</div>
+	</div>
+	<script type="text/javascript">
+	var app = new Vue({ el: '#app', 
+		data: { 
+			current:{n: '',name: '',  tel:'', company:''},
+			errors: [],
+			arr:[] 
+			}, 
+		methods: {
+			validateName(value){
+				if(value){
+					return true;
+				}else{
+					 this.errors.push('Введіть прізвище.');
+				return false;
+				}
+			},
+			validateTel(value){
+				let val = value;
+				let err= 0;
+				
+				 if(val[0]+val[1]+val[2]+val[3]=='+380'){
+				 for (let i = 4; i < 13; i += 1) {
+					 if(isNaN(val[i])){
+						 err=err+1; 
+				 }
+					 }
+				 }else{ err=err+1;}
+				if(err==0){
+					return true;
+				}else{
+					 this.errors.push('Введіть телефон у форматі +380ХХХХХХХХХ.');
+				return false;
+				}
+			},
+			validateCompany(value){
+				if(value){
+					return true;
+				}else{
+					this.errors.push('Введіть відділ.');
+				return false;
+				}
+			},
+			addCurrent() {
+				 this.errors = [];
+				 isName=this.validateName(this.current.name);
+				 isTel=this.validateTel(this.current.tel);
+				 isCompany=this.validateCompany(this.current.company);
+				if (isName&& isTel && isCompany) {
+				this.arr.push(JSON.parse(JSON.stringify(this.current))); 
+				this.current.name = ''
+				this.current.tel = ''
+				this.current.company = ''
+				}
+		
+			},
+
+		} 
+			})</script>
+</body>
