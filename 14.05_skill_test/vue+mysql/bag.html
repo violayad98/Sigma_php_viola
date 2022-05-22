@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/pl.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	crossorigin="anonymous">
+
+<link rel="stylesheet"
+	href="https://dl.dropboxusercontent.com/s/ggg4zmxzjgz4i9b/style.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+<style>
+.card-footer {
+	display: flex;
+	justify-content: space-between;
+}
+.bottom{
+	position:absolute; /* добавили */
+	bottom:70px; /* добавили */
+
+}
+
+</style>
+
+</head>
+<body>
+<div id="app">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div class="container px-4 px-lg-5">
+			<a class="navbar-brand col-9" href="/vue+mysql/bag.php">Viola's shop</a>
+
+			<div class='col-3'>
+
+				<a class="btn btn-outline-dark" type="submit" v-bind:href="link">
+					<i class="bi-cart-fill me-1"></i> Wishlist <span
+						class="badge bg-dark text-white ms-1 rounded-pill">{{numWish}}</span>
+				</a>
+
+				<a class="btn btn-outline-dark" type="submit" v-bind:href="link2">
+					<i class="bi-cart-fill me-1"></i> Cart <span
+						class="badge bg-dark text-white ms-1 rounded-pill">{{numCart}}</span>
+				</a>
+			</div>
+		</div>
+		
+	</nav>
+	
+
+
+		<div class="card-group">
+			<div class="card" style="min-width: 25%; max-width: 25%"
+				v-for="(el,index) in arr">
+				<img class="card-img-top" :src="el.card_link" alt="Card image cap">
+				<div class="card-body">
+					<h5 class="card-title">{{el.card_title}}</h5>
+					<p class="card-text">{{el.card_text}}</p>
+					 <p class="card-text bottom"><small class="text-muted">In stock {{el.card_amount}}</small></p>
+
+				</div>
+				<div class="card-footer">
+					<a class="btn btn-primary" v-bind:el="el" :class="[el.cartClass]"  v-on:click="addBuy(el)"  >{{el.card_price}}$</a> 
+					<a class="btn" v-bind:el="el" :class="[el.wishClass]" v-on:click="addWish(el)">Add to wishlist</a>
+				</div>
+			</div>
+		</div>
+
+
+
+	</div>
+	<script type="text/javascript">
+	var app = new Vue({ el: '#app', 
+		data: { 
+			
+			numCart:<?php echo isset($_SESSION['cart'])?array_sum($_SESSION['cart']):0?>,
+			numWish:<?php echo isset($numWish)? $numWish:0?>,
+			errors: [],
+			wish_list: [<?php foreach ($wish_list as $row){
+				print_r( "'$row',");
+				
+			}?>],
+			link:"/vue+mysql/wish.php?wish=[<?php foreach ($wish_list as $row){
+				print_r( "'$row',");
+				
+			}?>]&cart=[]",
+			link2:"/vue+mysql/my_bag.php?wish=[<?php foreach ($wish_list as $row){
+				print_r( "'$row',");
+				
+			}?>]&cart=[]",
+			cart_list: [],
+			//arr: [{ card_title: 'Product1',card_text: 'Text1'}, 
+			//      { card_title: 'Product2',card_text: 'Text2'},
+			 ////     { card_title: 'Product3',card_text: 'Text3'},
+			     // { card_title: 'Product4',card_text: 'Text4'},
+			      //{ card_title: 'Product5',card_text: 'Text5'},
+			 //     { card_title: 'Product6',card_text: 'Text6'},
+			//      { card_title: 'Product7',card_text: 'Text7'},]
+			
+			arr: [<?php foreach ($products as $row){
+			echo("{card_title:'$row->name',
+				   card_id:'$row->id',
+				   card_text: '$row->text',
+				   card_link: '$row->foto_link',
+				   card_amount: '$row->amount',
+				   card_price: '$row->price',
+				   wishClass:'$row->wishClass',
+				   cartClass:'$row->cartClass',
+				   },
+				   ")
+				   ;}
+			?>], 
+			
+		
+			}, 
+		methods: {
+			addBuy(e){
+				if(e.card_amount>0){
+				this.numCart=this.numCart+1;
+				e.card_amount=e.card_amount-1;
+				e.cartClass='btn-warning';
+				 this.cart_list.push(e.card_id);
+
+				}if(e.card_amount==0){
+					e.cartClass='btn-secondary';
+				}
+				this.link='/vue+mysql/wish.php?wish='+JSON.stringify(this.wish_list)+'&cart='+JSON.stringify(this.cart_list);
+				this.link2='/vue+mysql/my_bag.php?wish='+JSON.stringify(this.wish_list)+'&cart='+JSON.stringify(this.cart_list);
+
+			},
+			addWish(e){
+				if(e.wishClass!='btn-success'){
+				this.numWish=this.numWish+1;
+				e.wishClass='btn-success';
+				this.wish_list.push(e.card_id);
+				}else{
+					this.numWish=this.numWish-1;
+					e.wishClass='btn-primary';
+					this.wish_list.splice(e.card_id,1);
+					let Index=this.wish_list.indexOf(e.card_id);
+					if (Index !== -1) {
+						this.wish_list.splice(Index, 1);
+					}
+				}
+				this.link='/vue+mysql/wish.php?wish='+JSON.stringify(this.wish_list)+'&cart='+JSON.stringify(this.cart_list);
+				this.link2='/vue+mysql/my_bag.php?wish='+JSON.stringify(this.wish_list)+'&cart='+JSON.stringify(this.cart_list);
+
+				console.log(this.wish_list);
+			},
+			goWish(){
+				this.$router.push('/wish') ;
+			},
+			validateName(value){
+				if(value){
+					return true;
+				}else{
+					 this.errors.push('Введіть прізвище.');
+				return false;
+				}
+			},
+			validateTel(value){
+				let val = value;
+				let err= 0;
+				
+				 if(val[0]+val[1]+val[2]+val[3]=='+380'){
+				 for (let i = 4; i < 13; i += 1) {
+					 if(isNaN(val[i])){
+						 err=err+1; 
+				 }
+					 }
+				 }else{ err=err+1;}
+				if(err==0){
+					return true;
+				}else{
+					 this.errors.push('Введіть телефон у форматі +380ХХХХХХХХХ.');
+				return false;
+				}
+			},
+			validateCompany(value){
+				if(value){
+					return true;
+				}else{
+					this.errors.push('Введіть відділ.');
+				return false;
+				}
+			},
+			addCurrent() {
+				 this.errors = [];
+				 isName=this.validateName(this.current.name);
+				 isTel=this.validateTel(this.current.tel);
+				 isCompany=this.validateCompany(this.current.company);
+				if (isName&& isTel && isCompany) {
+				this.arr.push(JSON.parse(JSON.stringify(this.current))); 
+				this.current.name = ''
+				this.current.tel = ''
+				this.current.company = ''
+				}
+		
+			},
+
+		} 
+			})</script>
+</body>

@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/pl.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+
+
+<link rel="stylesheet"
+	href="https://dl.dropboxusercontent.com/s/ggg4zmxzjgz4i9b/style.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+<style>
+.card-footer {
+	display: flex;
+	justify-content: space-between;
+}
+.bottom{
+	position:absolute; /* добавили */
+	bottom:70px; /* добавили */
+
+}
+.total{
+	width:100%;
+	text-align:right;
+}
+
+</style>
+
+</head>
+<body>
+<div id="app1">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div class="container px-4 px-lg-5">
+			<a class="navbar-brand col-9" href="/vue+mysql/bag.php">Viola's shop</a>
+
+			<div class='col-3'>
+
+				<a class="btn btn-outline-dark" type="submit" href="/vue+mysql/wish.php">
+					<i class="bi-cart-fill me-1"></i> Wishlist <span
+						class="badge bg-dark text-white ms-1 rounded-pill">{{numWish}}</span>
+				</a>
+
+				<a class="btn btn-outline-dark" type="submit" href="/vue+mysql/my_bag.php">
+					<i class="bi-cart-fill me-1"></i> Cart <span
+						class="badge bg-dark text-white ms-1 rounded-pill">{{numCart}}</span>
+				</a>
+			</div>
+		</div>
+		
+	</nav>
+	<div id="table">
+			<table class="table table-striped">
+				<thead >
+					<tr>
+						<th scope="col">Item</th>
+						<th scope="col"></th>
+						<th scope="col">Info</th>
+						<th scope="col">Price</th>
+						<th scope="col">Count</th>
+						<th scope="col">Amount</th>
+						
+						
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(el,index) in products">
+						
+						<td>{{ el.name }}</td>
+						<td><img class="card-img-top" :src="el.link" ></td>
+						<td>{{ el.text }}</td>
+						<td>{{ el.price }}</td>
+						<td><svg xmlns="http://www.w3.org/2000/svg" v-on:click="del_item(el)" width="16" height="16" fill="currentColor" class="bi bi-dash-circle" viewBox="0 0 16 16">
+  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+  <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+</svg>{{ el.count }}<svg xmlns="http://www.w3.org/2000/svg"  v-on:click="add_item(el)"width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+</svg></td>
+						<td>{{el.amount2}}</td>
+						
+					</tr>
+					<tr>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col">{{total()}}<a type="button" class="btn btn-primary "  v-bind:href="link">Save</a>			
+						</th>
+						
+						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+
+	</div>
+	<script type="text/javascript">
+	var app1 = new Vue({ el: '#app1', 
+		data: { 
+			
+			numCart:<?php echo isset($numCart)? $numCart:0?>,
+			numWish:<?php echo isset($numWish)? $numWish:0?>,
+			link:'',
+					
+			products:[<?php foreach ($bag_list as $value){
+				echo("{    name:'$value->name',
+						   id:'$value->id',
+						   text: '$value->text',
+						   price: $value->price,
+						   count: $value->count, 
+						   amount: $value->amount, 
+						   amount2: $value->amount2, 
+						   link: '$value->foto_link'
+						   },
+						   ");
+			    
+			        
+			}
+					?>
+			          ],
+			}, 
+		methods: {del_item(e){
+			if(e.count>0){
+				e.count=e.count-1;
+				e.amount2=e.count*e.price;
+				this.link='/vue+mysql/save.php?cart='+JSON.stringify(this.products);
+				}
+			},
+			add_item(e){
+				if(e.count<e.amount){
+				e.count+=1;
+				e.amount2=e.count*e.price;
+				
+				
+				this.link='/vue+mysql/save.php?cart='+JSON.stringify(this.products);
+
+				}
+			},
+			total(){
+				 let result = 0;
+			      this.products.forEach(el=> result += el.amount2);
+			      return result;
+				
+			},
+
+		}
+			})</script>
+</body>

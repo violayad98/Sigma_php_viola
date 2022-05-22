@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/pl.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	crossorigin="anonymous">
+
+<link rel="stylesheet"
+	href="https://dl.dropboxusercontent.com/s/ggg4zmxzjgz4i9b/style.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+<style>
+.card-footer {
+	display: flex;
+	justify-content: space-between;
+}
+.bottom{
+	position:absolute; /* добавили */
+	bottom:70px; /* добавили */
+
+}
+
+</style>
+
+</head>
+<body>
+<div id="app1">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div class="container px-4 px-lg-5">
+			<a class="navbar-brand col-9" href="/vue+mysql/bag.php">Viola's shop</a>
+
+			<div class='col-3'>
+
+				<a class="btn btn-outline-dark" type="submit" href="">
+					<i class="bi-cart-fill me-1"></i> Wishlist <span
+						class="badge bg-dark text-white ms-1 rounded-pill">{{numWish}}</span>
+				</a>
+
+				<a class="btn btn-outline-dark" type="submit" href="/vue+mysql/my_bag.php">
+					<i class="bi-cart-fill me-1"></i> Cart <span
+						class="badge bg-dark text-white ms-1 rounded-pill">{{numCart}}</span>
+				</a>
+			</div>
+		</div>
+		
+	</nav>
+	<div id="table" v-if='products.length'>
+			<table class="table table-striped">
+				<thead >
+					<tr>
+						<th scope="col">Item</th>
+						<th scope="col"></th>
+						<th scope="col">Price</th>
+						<th scope="col">Count</th>
+						
+						
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(el,index) in products">
+						
+						<td>{{ el.name }}</td>
+						<td><img class="card-img-top" :src="el.link" ></td>
+						<td>{{ el.price }}</td>
+						<td>{{ el.count }}</td>
+						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+<div v-else class="text-center">NO ITEMS</div>
+
+
+	</div>
+	<script type="text/javascript">
+	var app1 = new Vue({ el: '#app1', 
+		data: { 
+			
+			numCart:<?php echo isset($numCart)? $numCart:0?>,
+			numWish:<?php echo isset($numWish)? $numWish:0?>,
+					link:'',
+			products:[<?php foreach ($wish_list as $value){
+				echo("{    name:'$value->name',
+						   id:'$value->id',
+						   price: '$value->text',
+						   count: '$value->amount', 
+						   link: '$value->foto_link'
+						   },
+						   ");
+			    
+			        
+			}
+					?>
+			          ],
+			}, 
+		methods: {
+			
+
+		} 
+			})</script>
+</body>
